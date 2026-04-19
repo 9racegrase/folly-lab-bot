@@ -40,7 +40,7 @@ function getBotReply(msg) {
   if (m.includes('預算') || m.includes('多少錢')) return '請問預算大約落在哪一段呢？\n・500 以下\n・500–1500\n・1500–3000\n・3000 以上';
   if (m.includes('真人') || m.includes('客服')) return '好的，為您轉由真人客服協助，請稍候 🙏';
 
-  return '您好！歡迎來到 FOLLY LAB 選物助手 🌿\n\n請問您想找：\n・手鍊／項鍊\n・淨化用品\n・客製訂做\n・訂單查詢\n・聯絡真人客服';
+  return '感謝您的訊息 🙏 已為您記錄，我們會請真人客服盡快與您聯繫。';
 }
 
 export default async function handler(req, res) {
