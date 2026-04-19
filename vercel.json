@@ -1,8 +1,130 @@
-{
-  "functions": {
-    "api/*.js": {
-      "memory": 128,
-      "maxDuration": 10
-    }
-  }
+const crypto = require('crypto');
+const CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET;
+const ACCESS_TOKEN = process.env.LINE_ACCESS_TOKEN;
+function validateSignature(body, signature) {
+const hash = crypto
+.createHmac('SHA256', CHANNEL_SECRET)
+.update(body)
+.digest('base64');
+return hash === signature;
+}
+async function replyMessage(replyToken, messages) {
+await fetch('https://api.line.me/v2/bot/message/reply', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+'Authorization': `Bearer ${ACCESS_TOKEN}`
+},
+});
+body: JSON.stringify({ replyToken, messages })
+}
+function text(msg) {
+return { type: 'text', text: msg };
+}
+function getBotMessages(msg) {
+const m = msg.toLowerCase();
+if (m.includes('⼿鍊') || m.includes('bracelet')) {
+return [
+text('可以的，這邊幫您整理⼿鍊系列 \n\n請問比較想看：\n・⽇常配戴款\n・送禮款\n・客製款\n\n以下是⼿
+text(' 礦⽯⼿串\nhttps://folly-lab.com/product-category/crystals-accessories/%E7%A4%A6
+];
+}
+if (m.includes('項鍊') || m.includes('necklace')) {
+return [
+text('項鍊這邊有礦⽯項鍊、檀⽊項鍊等⽅向 \n\n請問是⾃⽤還是送禮呢？'),
+text(' 礦⽯項鍊\nhttps://folly-lab.com/product-category/crystals-accessories/%E7%A4%A6
+];
+}
+if (m.includes('戒指') || m.includes('ring')) {
+return [
+text('礦⽯戒指⽬前有 3 款，戒圍部分建議先確認尺⼨再下單 '),
+text(' 礦⽯戒指\nhttps://folly-lab.com/product-category/crystals-accessories/%E7%A4%A6
+];
+}
+if (m.includes('淨化') || m.includes('聖⽊') || m.includes('鼠尾草') || m.includes('⿊鹽')) {
+return [
+text('淨化⽤品推薦幾款入⾨好選 \n\n 喜⾺拉雅⿊鹽 — NT$66\n 秘魯聖⽊條 — NT$55\n text(' 薰香淨化⽤品全系列\nhttps://folly-lab.com/product-category/tools\n\n GAZER ⽔晶
+北美⽩鼠
+];
+}
+if (m.includes('擺件') || m.includes('擺設') || m.includes('收藏')) {
+return [
+text('礦⽯擺件適合空間擺設、收藏或送禮 \n\n・⼒量動物系列（螢⽯獨⾓獸、拉長⽯海豚等）\n・神聖幾何系
+text(' 礦⽯擺件\nhttps://folly-lab.com/product-category/%E7%A4%A6%E7%9F%B3%E6%93%BA%E4
+];
+}
+if (m.includes('送禮') || m.includes('送朋友') || m.includes('禮物')) {
+return [
+text('送禮的話我幫您整理幾個⽅向 \n\n・溫柔療癒：粉晶、珍珠礦⽯系列\n・儀式感：聖⽊、⽩鼠尾草、⿊鹽
+text(' 所有商品\nhttps://folly-lab.com/product-category/products\n\n 脈輪咖啡（送禮⾸選
+];
+}
+if (m.includes('客製') || m.includes('訂做')) {
+return [
+text('可以客製的 \n\n⿇煩告訴我：\n1. 品項（⼿鍊 / 項鍊）\n2. 喜歡的晶⽯或顏⾊\n3. 整體風格\n4.
+text(' 客製參考款\nhttps://folly-lab.com/product-category/products\n\n（也可以直接把喜歡的
+];
+}
+if (m.includes('tattoo') || m.includes('刺青') || m.includes('紋⾝') || m.includes('紋繡')) {
+return [
+text('Tattoo DNA 是我們的刺青保養品牌線 \n\n・清潔慕斯 — NT$300\n・Gold 保養霜 — NT$400\n・P
+text(' Tattoo DNA 全系列\nhttps://folly-lab.com/product-category/tattoo-dna')
+];
+}
+if (m.includes('咖啡') || m.includes('zarpalanga') || m.includes('脈輪')) {
+return [
+text('Zarpalanga 脈輪咖啡是精品莊園咖啡 \n\n提供濾掛包 / 咖啡⾖，融合脈輪概念，NT$100–1000，送禮
+text(' 脈輪咖啡 Zarpalanga\nhttps://folly-lab.com/product-category/zarpalanga')
+];
+}
+if (m.includes('粉晶') || m.includes('⽩⽔晶') || m.includes('幽靈') || m.includes('⽔晶')) {
+return [
+text('每種晶⽯給⼈的感受都不太⼀樣 \n\n・粉晶 — 溫柔、愛與關係、送禮⾸選\n・⽩⽔晶 — 淨化、通透、入
+text(' GAZER ⽔晶碎⽯系列\nhttps://folly-lab.com/product-category/gazer/%E6%B0%B4%E6%99
+];
+}
+if (m.includes('訂單') || m.includes('查') || m.includes('出貨') || m.includes('幾天')) {
+return [
+text('個⼈訂單查詢需要先核對資料，⿇煩提供：\n\n・訂單編號\n・下單姓名或 Email\n\n我會協助轉交客服為
+];
+}
+if (m.includes('500') || m.includes('預算') || m.includes('多少錢') || m.includes('便宜')) {
+return [
+text('依預算幫您整理推薦⽅向 \n\n・NT$500 以下：⿊鹽 NT$66、聖⽊ NT$55、⽩⽔晶碎⽯ NT$60–120\n
+text(' 所有商品（可依價格篩選）\nhttps://folly-lab.com/product-category/products')
+];
+}
+if (m.includes('真⼈') || m.includes('客服') || m.includes('聯絡')) {
+return [
+text('好的，為您轉由真⼈客服協助 \n\n適合找真⼈的情境：\n・客製報價確認\n・爭議訂單 / 退換貨\n・急
+];
+}
+|| m.i
+if (m.includes('你好') || m.includes('嗨') || m.includes('hi') || m.includes('hello') return [
+text('您好！歡迎來到 FOLLY LAB 選物助⼿ \n\n請問您想找什麼呢？\n\n・⼿鍊 / 項鍊 / 戒指\n・礦⽯擺
+text(' 逛逛所有商品\nhttps://folly-lab.com/product-category/products')
+];
+}
+// 預設回覆
+return [
+text('謝謝您的訊息！請問您想找：\n\n・⼿鍊 / 項鍊\n・淨化⽤品\n・礦⽯擺件\n・客製訂做\n・訂單查詢\n・聯
+text(' 逛逛所有商品\nhttps://folly-lab.com/product-category/products')
+];
+}
+export default async function handler(req, res) {
+if (req.method !== 'POST') return res.status(200).send('OK');
+const signature = req.headers['x-line-signature'];
+const rawBody = JSON.stringify(req.body);
+if (!validateSignature(rawBody, signature)) {
+return res.status(403).send('Invalid signature');
+}
+const events = req.body.events || [];
+for (const event of events) {
+if (event.type === 'message' && event.message.type === 'text') {
+const userMsg = event.message.text;
+const messages = getBotMessages(userMsg);
+await replyMessage(event.replyToken, messages);
+}
+}
+res.status(200).send('OK');
 }
