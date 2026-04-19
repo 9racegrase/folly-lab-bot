@@ -5,19 +5,4 @@
       "maxDuration": 10
     }
   }
-}  if (!validateSignature(rawBody, signature)) {
-    return res.status(403).send('Invalid signature');
-  }
-
-  const events = req.body.events || [];
-
-  for (const event of events) {
-    if (event.type === 'message' && event.message.type === 'text') {
-      const userMsg = event.message.text;
-      const reply = getBotReply(userMsg);
-      await replyMessage(event.replyToken, reply);
-    }
-  }
-
-  res.status(200).send('OK');
 }
