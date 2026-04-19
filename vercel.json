@@ -64,4 +64,34 @@ export default async function handler(req, res) {
   }
 
   res.status(200).send('OK');
+}  if (m.includes('咖啡') || m.includes('脈輪')) return '脈輪咖啡是我們精品咖啡品牌線，送禮自用都很合適 ☕\n\n👉 立即選購：https://folly-lab.com/product-category/zarpalanga';
+  if (m.includes('tattoo') || m.includes('刺青') || m.includes('紋身')) return 'Tattoo DNA 刺青保養系列：\n\n・清潔慕斯 NT$300\n・Gold 保養霜 NT$400\n・Pink 花香保養霜 NT$300\n・Gold 保養組合 NT$700\n\n👉 立即選購：https://folly-lab.com/product-category/tattoo-dna';
+  if (m.includes('訂單') || m.includes('出貨')) return '請提供訂單編號與下單姓名，我會協助轉交客服為您確認進度 📦';
+  if (m.includes('預算') || m.includes('多少錢')) return '請問預算大約落在哪一段呢？\n・500 以下\n・500–1500\n・1500–3000\n・3000 以上';
+  if (m.includes('真人') || m.includes('客服')) return '好的，為您轉由真人客服協助，請稍候 🙏';
+
+  return '您好！歡迎來到 FOLLY LAB 選物助手 🌿\n\n請問您想找：\n・手鍊／項鍊\n・淨化用品\n・客製訂做\n・訂單查詢\n・聯絡真人客服';
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(200).send('OK');
+
+  const signature = req.headers['x-line-signature'];
+  const rawBody = JSON.stringify(req.body);
+
+  if (!validateSignature(rawBody, signature)) {
+    return res.status(403).send('Invalid signature');
+  }
+
+  const events = req.body.events || [];
+
+  for (const event of events) {
+    if (event.type === 'message' && event.message.type === 'text') {
+      const userMsg = event.message.text;
+      const reply = getBotReply(userMsg);
+      await replyMessage(event.replyToken, reply);
+    }
+  }
+
+  res.status(200).send('OK');
 }
